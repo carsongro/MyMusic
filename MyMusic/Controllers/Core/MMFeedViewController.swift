@@ -19,7 +19,7 @@ class MMFeedViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         view.backgroundColor = .systemBackground
-        title = "Feed"
+        navigationController?.setNavigationBarHidden(true, animated: false)
         setUpView()
     }
     
@@ -28,7 +28,7 @@ class MMFeedViewController: UIViewController {
     private func setUpView() {
         view.addSubview(feedView)
         NSLayoutConstraint.activate([
-            feedView.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            feedView.topAnchor.constraint(equalTo: view.topAnchor),
             feedView.leftAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leftAnchor),
             feedView.rightAnchor.constraint(equalTo: view.safeAreaLayoutGuide.rightAnchor),
             feedView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),

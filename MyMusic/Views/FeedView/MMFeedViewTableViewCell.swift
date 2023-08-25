@@ -36,8 +36,7 @@ class MMFeedViewTableViewCell: UITableViewCell {
     
     override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         super.init(style: style, reuseIdentifier: reuseIdentifier)
-        contentView.backgroundColor = .red
-        addSubviews(trackNameLabel, artistNameLabel, trackImageView)
+        addSubviews(trackImageView, trackNameLabel, artistNameLabel)
         addConstraints()
     }
     
@@ -56,18 +55,18 @@ class MMFeedViewTableViewCell: UITableViewCell {
     
     private func addConstraints() {
         NSLayoutConstraint.activate([
-            artistNameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: 10),
+            artistNameLabel.bottomAnchor.constraint(equalTo: bottomAnchor, constant: -10),
             artistNameLabel.leftAnchor.constraint(equalTo: leftAnchor, constant: 10),
             artistNameLabel.rightAnchor.constraint(equalTo: rightAnchor, constant: 10),
             
-            trackNameLabel.bottomAnchor.constraint(equalTo: artistNameLabel.topAnchor, constant: 5),
-            trackNameLabel.leftAnchor.constraint(equalTo: artistNameLabel.leftAnchor, constant: 10),
-            trackNameLabel.rightAnchor.constraint(equalTo: artistNameLabel.rightAnchor, constant: 10),
+            trackNameLabel.bottomAnchor.constraint(equalTo: artistNameLabel.topAnchor),
+            trackNameLabel.leftAnchor.constraint(equalTo: artistNameLabel.leftAnchor),
+            trackNameLabel.rightAnchor.constraint(equalTo: artistNameLabel.rightAnchor),
             
-            trackImageView.widthAnchor.constraint(equalTo: widthAnchor, constant: 15),
-            trackImageView.heightAnchor.constraint(equalTo: widthAnchor, constant: 15),
+            trackImageView.widthAnchor.constraint(equalTo: widthAnchor),
+            trackImageView.heightAnchor.constraint(equalTo: widthAnchor),
             trackImageView.centerXAnchor.constraint(equalTo: centerXAnchor),
-            trackImageView.centerYAnchor.constraint(equalTo: centerYAnchor),
+            trackImageView.centerYAnchor.constraint(equalTo: centerYAnchor)
         ])
     }
     

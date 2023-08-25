@@ -15,6 +15,9 @@ class MMFeedView: UIView {
         let table = UITableView()
         table.translatesAutoresizingMaskIntoConstraints = false
         table.isPagingEnabled = true
+        table.separatorStyle = .none
+        table.showsVerticalScrollIndicator = false
+        table.contentInsetAdjustmentBehavior = .never
         table.isHidden = true
         table.alpha = 0
         table.register(MMFeedViewTableViewCell.self,
@@ -48,8 +51,8 @@ class MMFeedView: UIView {
     // MARK: Private
     
     private func setupTableView() {
-        tableView.dataSource = viewModel
-        tableView.delegate = viewModel
+        tableView.dataSource = self
+        tableView.delegate = self
     }
     
     private func addConstraints() {
@@ -64,6 +67,34 @@ class MMFeedView: UIView {
             tableView.rightAnchor.constraint(equalTo: rightAnchor),
             tableView.bottomAnchor.constraint(equalTo: bottomAnchor)
         ])
+    }
+}
+
+// MARK: TableViewDelegate
+
+extension MMFeedView: UITableViewDelegate, UITableViewDataSource {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        viewModel.cellViewModels.count
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(
+            withIdentifier: MMFeedViewTableViewCell.cellIdentifier,
+            for: indexPath
+        ) as? MMFeedViewTableViewCell else {
+            fatalError()
+        }
+        let cellViewModel = viewModel.cellViewModels[indexPath.row]
+        cell.configure(with: cellViewModel)
+        return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        frame.size.height - safeAreaInsets.bottom
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
     }
 }
 

@@ -20,28 +20,14 @@ final class MMFeedViewViewModel: NSObject {
     public func fetchSongs() {
         cellViewModels = [.init(trackName: "Summer Sixteen",
                                 artistName: "Drake",
-                                imageURL: URL(string: "https://www.apple.com/v/apple-music/x/images/shared/og__ckjrh2mu8b2a_image.png"))]
+                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg")),
+                          .init(trackName: "Summer Sixteen",
+                                artistName: "Drake",
+                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg")),
+                          .init(trackName: "Summer Sixteen",
+                                artistName: "Drake",
+                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg"))]
         
         delegate?.didFetchInitialSongs()
-    }
-}
-
-// MARK: TableViewDelegate
-
-extension MMFeedViewViewModel: UITableViewDelegate, UITableViewDataSource {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        cellViewModels.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MMFeedViewTableViewCell.cellIdentifier,
-            for: indexPath
-        ) as? MMFeedViewTableViewCell else {
-            fatalError()
-        }
-        let cellViewModel = cellViewModels[indexPath.row]
-        cell.configure(with: cellViewModel)
-        return cell
     }
 }
