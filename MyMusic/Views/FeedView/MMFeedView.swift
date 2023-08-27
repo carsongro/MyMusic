@@ -101,7 +101,6 @@ extension MMFeedView: UITableViewDelegate, UITableViewDataSource {
         viewModel.handleCellSelected()
     }
     
-    //TODO: Auto Scroll When Song Ends
     func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
         guard tableView.visibleCells.count == 1,
               let currentCell = tableView.visibleCells.first as? MMFeedViewTableViewCell,

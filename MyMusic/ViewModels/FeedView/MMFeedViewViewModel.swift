@@ -74,6 +74,7 @@ final class MMFeedViewViewModel: NSObject {
                 }
                 
                 player.queue = ApplicationMusicPlayer.Queue(for: loadedTracks, startingAt: loadedTracks[0])
+                playerState.repeatMode = .one
                 beginPlaying()
                 
             } catch {
