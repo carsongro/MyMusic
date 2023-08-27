@@ -12,9 +12,9 @@ struct MMFeedViewTableViewCellViewModel {
     let artistName: String
     let imageURL: URL?
     
-    public func fetchImage() async throws -> UIImage {
+    public func fetchImage() async throws -> UIImage? {
         guard let imageURL = imageURL else {
-            throw ImageLoadingError.invalidURL
+            return nil
         }
         
         return try await MMImageLoader.shared.fetchImage(imageURL)

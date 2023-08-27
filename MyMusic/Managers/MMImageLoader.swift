@@ -28,11 +28,11 @@ final class MMImageLoader {
         
         guard let httpResponse = response as? HTTPURLResponse,
               httpResponse.statusCode == 200 else {
-            throw ImageLoadingError.invalidServerResponse
+            throw MMError.invalidServerResponse
         }
         
         guard let image = UIImage(data: data as Data) else {
-            throw ImageLoadingError.unsupportedImage
+            throw MMError.unsupportedImage
         }
         
         let value = data as NSData
@@ -42,8 +42,9 @@ final class MMImageLoader {
     }
 }
 
-enum ImageLoadingError: Error {
+enum MMError: Error {
     case invalidServerResponse
     case unsupportedImage
     case invalidURL
+    case playlistNotFound
 }
