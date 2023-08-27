@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MusicKit
 
 struct MMFeedViewTableViewCellViewModel {
     let trackName: String

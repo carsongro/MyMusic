@@ -31,6 +31,8 @@ class MMFeedView: UIView {
         spinner.translatesAutoresizingMaskIntoConstraints = false
         return spinner
     }()
+    
+    // MARK: Init
 
     override init(frame: CGRect) {
         super.init(frame: frame)
@@ -86,6 +88,7 @@ extension MMFeedView: UITableViewDelegate, UITableViewDataSource {
         }
         let cellViewModel = viewModel.cellViewModels[indexPath.row]
         cell.configure(with: cellViewModel)
+        cell.selectionStyle = .none
         return cell
     }
     
@@ -95,6 +98,23 @@ extension MMFeedView: UITableViewDelegate, UITableViewDataSource {
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        viewModel.handleCellSelected()
+    }
+    
+    //TODO: Auto Scroll When Song Ends
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        guard tableView.visibleCells.count == 1,
+              let currentCell = tableView.visibleCells.first as? MMFeedViewTableViewCell,
+              currentCell != viewModel.lastDisplayedCell else {
+            return
+        }
+        
+        viewModel.displayedCell = currentCell
+        viewModel.lastDisplayedCell = viewModel.displayedCell
+        viewModel.handleNewDisplayedCell(
+            scrollDirection: scrollView.contentOffset.y > viewModel.lastDisplayedCellScrollPosition ? .down : .up
+        )
+        viewModel.lastDisplayedCellScrollPosition = scrollView.contentOffset.y
     }
 }
 
