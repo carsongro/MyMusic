@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import MusicKit
 
 protocol MMFeedViewViewModelDelegate: AnyObject {
     func didFetchInitialSongs()
@@ -14,19 +15,14 @@ protocol MMFeedViewViewModelDelegate: AnyObject {
 final class MMFeedViewViewModel: NSObject {
     
     weak var delegate: MMFeedViewViewModelDelegate?
-    
+     
     public private(set) var cellViewModels = [MMFeedViewTableViewCellViewModel]()
     
-    public func fetchSongs() {
-        cellViewModels = [.init(trackName: "Summer Sixteen",
-                                artistName: "Drake",
-                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg")),
-                          .init(trackName: "Summer Sixteen",
-                                artistName: "Drake",
-                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg")),
-                          .init(trackName: "Summer Sixteen",
-                                artistName: "Drake",
-                                imageURL: URL(string: "https://upload.wikimedia.org/wikipedia/en/2/2f/SummerSixteen.jpg"))]
+    public func fetchInitialSongs() {
+        
+        var request = MusicPersonalRecommendationsRequest()
+        request.limit = 5
+        
         
         delegate?.didFetchInitialSongs()
     }

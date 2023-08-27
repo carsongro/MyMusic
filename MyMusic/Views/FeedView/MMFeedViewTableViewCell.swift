@@ -76,11 +76,11 @@ class MMFeedViewTableViewCell: UITableViewCell {
         trackNameLabel.text = viewModel.trackName
         artistNameLabel.text = viewModel.artistName
         
-        Task {
+        Task { [weak self] in
             do {
                 let image = try await viewModel.fetchImage()
                 Task { @MainActor in
-                    trackImageView.image = image
+                    self?.trackImageView.image = image
                 }
             } catch {
                 print(error.localizedDescription)

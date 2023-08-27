@@ -1,21 +1,20 @@
 //
-//  MMProfileViewController.swift
+//  MMMusicAuthViewController.swift
 //  MyMusic
 //
-//  Created by Carson Gross on 8/23/23.
+//  Created by Carson Gross on 8/26/23.
 //
 
 import SwiftUI
-import SafariServices
 import MusicKit
 
 /// Controller for the user profile and settings
-class MMProfileViewController: UIViewController {
+class MMMusicAuthViewController: UIViewController {
     
     // MARK: Properties
     
-    private var profileSwiftUIController: UIHostingController<MMProfileView>?
-
+    private var profileSwiftUIController: UIHostingController<MMAuthView>?
+    
     // MARK: Lifecycle
     
     override func viewDidLoad() {
@@ -28,15 +27,9 @@ class MMProfileViewController: UIViewController {
     
     private func addSwiftUIController() {
         let profileSwiftUIController = UIHostingController(
-            rootView: MMProfileView(viewModel: MMProfileViewViewModel(
-                cellViewModels: MMProfileOption.allCases.compactMap {
-                    return MMProfileViewCellViewModel(type: $0) { [weak self] option in
-                        DispatchQueue.main.async {
-                            self?.handleProfileTap(option: option)
-                        }
-                    }
-                })
-            )
+            rootView: MMAuthView { [weak self] in
+                self?.handleAuthTap()
+            }
         )
         
         addChild(profileSwiftUIController)
@@ -55,16 +48,17 @@ class MMProfileViewController: UIViewController {
         self.profileSwiftUIController = profileSwiftUIController
     }
     
-    private func handleProfileTap(option: MMProfileOption) {
+    private func handleAuthTap() {
         guard Thread.current.isMainThread else {
             return
         }
-        
-        switch option {
-        case .sourceCode:
-            if let url = option.targetURL {
-                let vc = SFSafariViewController(url: url)
-                present(vc, animated: true)
+        MMMusicAuthManager.shared.handleMusicAuthorization() { [weak self] isAuthorized in
+            if isAuthorized {
+                DispatchQueue.main.async {
+                    let vc = MMTabBarViewController()
+                    vc.modalPresentationStyle = .fullScreen
+                    self?.present(vc, animated: true)
+                }
             }
         }
     }

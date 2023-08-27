@@ -5,7 +5,7 @@
 //  Created by Carson Gross on 8/24/23.
 //
 
-import UIKit
+import SwiftUI
 
 class MMFeedView: UIView {
     
@@ -41,7 +41,7 @@ class MMFeedView: UIView {
         addSubviews(tableView, spinner)
         addConstraints()
         viewModel.delegate = self
-        viewModel.fetchSongs()
+        viewModel.fetchInitialSongs()
     }
     
     required init?(coder: NSCoder) {
@@ -105,7 +105,7 @@ extension MMFeedView: MMFeedViewViewModelDelegate {
         spinner.stopAnimating()
         tableView.isHidden = false
         tableView.reloadData()
-        UIView.animate(withDuration: 0.3) {
+        withAnimation {
             self.tableView.alpha = 1
         }
     }

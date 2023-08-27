@@ -1,5 +1,5 @@
 //
-//  UIViewExtensions.swift
+//  Extensions.swift
 //  MyMusic
 //
 //  Created by Carson Gross on 8/24/23.
