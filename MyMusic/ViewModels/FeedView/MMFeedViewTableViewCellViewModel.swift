@@ -8,7 +8,8 @@
 import UIKit
 import MusicKit
 
-struct MMFeedViewTableViewCellViewModel {
+struct MMFeedViewTableViewCellViewModel: Hashable {
+    let id = UUID()
     let trackName: String
     let artistName: String
     let imageURL: URL?

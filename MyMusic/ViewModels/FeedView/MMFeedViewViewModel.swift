@@ -28,15 +28,20 @@ final class MMFeedViewViewModel: NSObject {
     }
     
     weak var delegate: MMFeedViewViewModelDelegate?
-     
+    
     public private(set) var cellViewModels = [MMFeedViewTableViewCellViewModel]()
     
     public var lastDisplayedCell: MMFeedViewTableViewCell?
     public var lastDisplayedCellScrollPosition: CGFloat = 0
     public var displayedCell: MMFeedViewTableViewCell?
     
+    enum FeedViewSection {
+        case main
+    }
+    
     // MARK: Public
     
+    /// Get the initial list of songs when the view loads
     public func fetchInitialSongs() {
         Task {
             do {
@@ -51,7 +56,7 @@ final class MMFeedViewViewModel: NSObject {
                 var playlistRequest = MusicCatalogResourceRequest<Playlist>(matching: \.id, equalTo: MusicItemID(playlistId.rawValue))
                 playlistRequest.properties = [.tracks]
                 let playlistResponse = try await playlistRequest.response()
-                 
+                
                 guard let tracks = playlistResponse.items.first?.tracks else {
                     throw MMError.playlistNotFound
                 }
@@ -73,6 +78,10 @@ final class MMFeedViewViewModel: NSObject {
                     self?.delegate?.didFetchInitialSongs()
                 }
                 
+//                await MainActor.run { [weak self] in
+//                    self?.delegate?.didFetchInitialSongs()
+//                }
+                
                 player.queue = ApplicationMusicPlayer.Queue(for: loadedTracks, startingAt: loadedTracks[0])
                 playerState.repeatMode = .one
                 beginPlaying()
@@ -83,6 +92,8 @@ final class MMFeedViewViewModel: NSObject {
         }
     }
     
+    /// Determines whether to skip to next or previous song based on the users scroll direction
+    /// - Parameter scrollDirection: The direction the user was scrolling
     public func handleNewDisplayedCell(scrollDirection: ScrollDirection) {
         Task {
             do {

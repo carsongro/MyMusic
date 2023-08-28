@@ -7,7 +7,10 @@
 
 import SwiftUI
 
+/// View for the primiary feed
 class MMFeedView: UIView {
+    
+    // MARK: Properties
     
     let viewModel = MMFeedViewViewModel()
     
@@ -24,6 +27,8 @@ class MMFeedView: UIView {
                        forCellReuseIdentifier: MMFeedViewTableViewCell.cellIdentifier)
         return table
     }()
+    
+    var dataSource: UITableViewDiffableDataSource<MMFeedViewViewModel.FeedViewSection, MMFeedViewTableViewCellViewModel>!
     
     private let spinner: UIActivityIndicatorView = {
         let spinner = UIActivityIndicatorView(style: .large)
@@ -44,6 +49,7 @@ class MMFeedView: UIView {
         addConstraints()
         viewModel.delegate = self
         viewModel.fetchInitialSongs()
+        setUpDataSource()
     }
     
     required init?(coder: NSCoder) {
@@ -53,8 +59,32 @@ class MMFeedView: UIView {
     // MARK: Private
     
     private func setupTableView() {
-        tableView.dataSource = self
         tableView.delegate = self
+    }
+    
+    private func setUpDataSource() {
+        dataSource = UITableViewDiffableDataSource(
+            tableView: tableView
+        ) { [weak self] tableView, indexPath, itemIdentifier in
+            guard let self,
+                  let cell = tableView.dequeueReusableCell(
+                withIdentifier: MMFeedViewTableViewCell.cellIdentifier,
+                for: indexPath
+            ) as? MMFeedViewTableViewCell else {
+                fatalError()
+            }
+            let cellViewModel = self.viewModel.cellViewModels[indexPath.row]
+            cell.configure(with: cellViewModel)
+            cell.selectionStyle = .none
+            return cell
+        }
+    }
+    
+    private func updateDataSource() {
+        var snapshot = NSDiffableDataSourceSnapshot<MMFeedViewViewModel.FeedViewSection, MMFeedViewTableViewCellViewModel>()
+        snapshot.appendSections([.main])
+        snapshot.appendItems(viewModel.cellViewModels)
+        dataSource.apply(snapshot, animatingDifferences: true)
     }
     
     private func addConstraints() {
@@ -74,22 +104,9 @@ class MMFeedView: UIView {
 
 // MARK: TableViewDelegate
 
-extension MMFeedView: UITableViewDelegate, UITableViewDataSource {
+extension MMFeedView: UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         viewModel.cellViewModels.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCell(
-            withIdentifier: MMFeedViewTableViewCell.cellIdentifier,
-            for: indexPath
-        ) as? MMFeedViewTableViewCell else {
-            fatalError()
-        }
-        let cellViewModel = viewModel.cellViewModels[indexPath.row]
-        cell.configure(with: cellViewModel)
-        cell.selectionStyle = .none
-        return cell
     }
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -123,7 +140,7 @@ extension MMFeedView: MMFeedViewViewModelDelegate {
     func didFetchInitialSongs() {
         spinner.stopAnimating()
         tableView.isHidden = false
-        tableView.reloadData()
+        updateDataSource()
         withAnimation {
             self.tableView.alpha = 1
         }

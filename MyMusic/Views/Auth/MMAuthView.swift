@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+/// View with a button to authorize access to the users music data
 struct MMAuthView: View {
     
     var buttonTapped: () -> Void

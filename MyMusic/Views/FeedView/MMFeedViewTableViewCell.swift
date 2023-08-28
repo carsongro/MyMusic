@@ -8,6 +8,9 @@
 import UIKit
 
 class MMFeedViewTableViewCell: UITableViewCell {
+    
+    // MARK: Properties
+    
     static let cellIdentifier = "MMFeedViewTableViewCell"
     
     private let trackNameLabel: UILabel = {
