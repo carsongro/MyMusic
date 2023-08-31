@@ -29,7 +29,7 @@ struct MMProfileView: View {
                         .renderingMode(.template)
                         .resizable()
                         .scaledToFit()
-                        .frame(width: 20, height: 20)
+                        .frame(width: 15)
                         .padding(8)
                         .background(Color(uiColor: viewModel.iconContainerColor))
                         .cornerRadius(6)

@@ -84,7 +84,7 @@ class MMFeedView: UIView {
         var snapshot = NSDiffableDataSourceSnapshot<MMFeedViewViewModel.FeedViewSection, MMFeedViewTableViewCellViewModel>()
         snapshot.appendSections([.main])
         snapshot.appendItems(viewModel.cellViewModels)
-        dataSource.apply(snapshot, animatingDifferences: true)
+        dataSource.apply(snapshot, animatingDifferences: false)
     }
     
     private func addConstraints() {
