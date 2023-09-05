@@ -48,7 +48,7 @@ class MMFeedView: UIView {
         addSubviews(tableView, spinner)
         addConstraints()
         viewModel.delegate = self
-        viewModel.fetchInitialSongs()
+        viewModel.fetchInitialTracks()
         setUpDataSource()
     }
     
@@ -137,7 +137,7 @@ extension MMFeedView: UITableViewDelegate {
 // MARK: MMFeedViewViewModelDelegate
 
 extension MMFeedView: MMFeedViewViewModelDelegate {
-    func didFetchInitialSongs() {
+    func didFetchInitialTracks() {
         spinner.stopAnimating()
         tableView.isHidden = false
         updateDataSource()

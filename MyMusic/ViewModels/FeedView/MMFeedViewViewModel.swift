@@ -9,7 +9,7 @@ import UIKit
 import MusicKit
 
 protocol MMFeedViewViewModelDelegate: AnyObject {
-    func didFetchInitialSongs()
+    func didFetchInitialTracks()
 }
 
 final class MMFeedViewViewModel: NSObject {
@@ -41,54 +41,9 @@ final class MMFeedViewViewModel: NSObject {
     
     // MARK: Public
     
-    /// Get the initial list of songs when the view loads
-    public func fetchInitialSongs() {
+    public func fetchInitialTracks() {
         Task {
-            do {
-                var request = MusicPersonalRecommendationsRequest()
-                request.limit = 1
-                let response = try await request.response()
-                
-                guard let playlistId = response.recommendations.first?.playlists.first?.id else {
-                    throw MMError.playlistNotFound
-                }
-                
-                var playlistRequest = MusicCatalogResourceRequest<Playlist>(matching: \.id, equalTo: MusicItemID(playlistId.rawValue))
-                playlistRequest.properties = [.tracks]
-                let playlistResponse = try await playlistRequest.response()
-                
-                guard let tracks = playlistResponse.items.first?.tracks else {
-                    throw MMError.playlistNotFound
-                }
-                
-                loadedTracks = tracks
-                
-                cellViewModels = loadedTracks.compactMap {
-                    MMFeedViewTableViewCellViewModel(
-                        trackName: $0.title,
-                        artistName: $0.artistName,
-                        imageURL: $0.artwork?.url(
-                            width: 500,
-                            height: 500
-                        )
-                    )
-                }
-                
-                Task { @MainActor [weak self] in
-                    self?.delegate?.didFetchInitialSongs()
-                }
-                
-//                await MainActor.run { [weak self] in
-//                    self?.delegate?.didFetchInitialSongs()
-//                }
-                
-                player.queue = ApplicationMusicPlayer.Queue(for: loadedTracks, startingAt: loadedTracks[0])
-                playerState.repeatMode = .one
-                beginPlaying()
-                
-            } catch {
-                print(error.localizedDescription)
-            }
+            await fetchRecommendedTracks()
         }
     }
     
@@ -142,6 +97,73 @@ final class MMFeedViewViewModel: NSObject {
                 print("Failed to prepare to play with error: \(error).")
             }
         }
+    }
+    
+    /// Get the initial list of songs when the view loads
+    private func fetchRecommendedTracks() async {
+        let fetchTracksTask = Task { () -> MusicItemCollection<Track> in
+            do {
+                var request = MusicPersonalRecommendationsRequest()
+                request.limit = 1
+                let response = try await request.response()
+                
+                guard let playlistId = response.recommendations.first?.playlists.first?.id else {
+                    throw MMError.playlistNotFound
+                }
+                
+                var playlistRequest = MusicCatalogResourceRequest<Playlist>(
+                    matching: \.id,
+                    equalTo: MusicItemID(playlistId.rawValue)
+                )
+                playlistRequest.properties = [.tracks]
+                let playlistResponse = try await playlistRequest.response()
+                
+                guard let tracks = playlistResponse.items.first?.tracks else {
+                    throw MMError.playlistNotFound
+                }
+                
+                return tracks
+            } catch {
+                throw error
+            }
+        }
+        
+        let result = await fetchTracksTask.result
+        
+        do {
+            let tracks = try result.get()
+            await loadTracks(tracks: tracks)
+        } catch {
+            print(error.localizedDescription)
+        }
+    }
+    
+    @MainActor
+    /// Updates cellViewModels, notifys the delegate, and begins playing
+    /// - Parameter tracks: Tracks which will be loaded into the cellViewModels
+    private func loadTracks(tracks: MusicItemCollection<Track>) {
+        guard let firstTrack = tracks.first else {
+            return
+        }
+        
+        loadedTracks = tracks
+        
+        cellViewModels = loadedTracks.compactMap {
+            MMFeedViewTableViewCellViewModel(
+                trackName: $0.title,
+                artistName: $0.artistName,
+                imageURL: $0.artwork?.url(
+                    width: 500,
+                    height: 500
+                )
+            )
+        }
+        
+        self.delegate?.didFetchInitialTracks()
+        
+        self.player.queue = ApplicationMusicPlayer.Queue(for: self.loadedTracks, startingAt: firstTrack)
+        self.playerState.repeatMode = .one
+        self.beginPlaying()
     }
 }
 
